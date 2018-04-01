@@ -28,6 +28,7 @@ export { Configuration, Formatters, Rules, Test, Utils };
 export * from "./linter";
 export * from "./language/rule/rule";
 export * from "./enableDisableRules";
+export * from "./enableDisableRulesOnGitDiff";
 export * from "./formatterLoader";
 export * from "./ruleLoader";
 export * from "./language/utils";

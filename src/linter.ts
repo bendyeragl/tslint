@@ -29,6 +29,7 @@ import {
     loadConfigurationFromPath,
 } from "./configuration";
 import { removeDisabledFailures } from "./enableDisableRules";
+import { removeIrreleventFailures } from "./enableDisableRulesOnGitDiff";
 import { FatalError, isError, showWarningOnce } from "./error";
 import { findFormatter } from "./formatterLoader";
 import { ILinterOptions, LintResult } from "./index";
@@ -163,7 +164,8 @@ export class Linter {
     }
 
     private getAllFailures(sourceFile: ts.SourceFile, enabledRules: IRule[]): RuleFailure[] {
-        const failures = flatMap(enabledRules, (rule) => this.applyRule(rule, sourceFile));
+        let failures = flatMap(enabledRules, (rule) => this.applyRule(rule, sourceFile));
+        failures = removeIrreleventFailures(sourceFile, failures);
         return removeDisabledFailures(sourceFile, failures);
     }
 
@@ -177,7 +179,8 @@ export class Linter {
             const hasFixes = fileFailures.some((f) => f.hasFix() && f.getRuleName() === rule.getOptions().ruleName);
             if (hasFixes) {
                 // Get new failures in case the file changed.
-                const updatedFailures = removeDisabledFailures(sourceFile, this.applyRule(rule, sourceFile));
+                const notExcluded = removeIrreleventFailures(sourceFile, this.applyRule(rule, sourceFile));
+                const updatedFailures = removeDisabledFailures(sourceFile, notExcluded);
                 const fixableFailures = updatedFailures.filter((f) => f.hasFix());
                 this.fixes = this.fixes.concat(fixableFailures);
                 source = this.applyFixes(sourceFileName, source, fixableFailures);
