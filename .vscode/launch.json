@@ -23,6 +23,27 @@
             "outFiles": ["${workspaceRoot}/build/**/*.js"]
         },
         {
+            "name": "self lint",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/bin/tslint",
+            "stopOnEntry": false,
+            "args": [ "--project", "test/tsconfig.json", "--format", "stylish"],
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "tsc",
+            "runtimeExecutable": null,
+            "runtimeArgs": [
+                "--nolazy"
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "console": "internalConsole",
+            "outputCapture": "std",
+            "sourceMaps": true,
+            "outFiles": ["${workspaceRoot}/build/**/*.js"]
+        },
+        {
             "name": "Debug Mocha Tests",
             "type": "node",
             "request": "launch",
