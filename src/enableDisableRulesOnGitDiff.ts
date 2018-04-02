@@ -26,7 +26,7 @@ const outFileNameRegex = /^\+\+\+ b(.*)$/m;
 const changeRegex = /^@@ \-\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/mg;
 
 (function init() {
-    const result = execSync("git --no-pager diff -U0 origin/master", {encoding: "utf8"});
+    const result = execSync("git --no-pager diff -U0 master", {encoding: "utf8"});
     const gitOutputByFile = splitGitOutputByFile(result);
     const filtered = gitOutputByFile.filter((x) => x !== "");
     const mapToBlob =  filtered.map(toFileNameMap)
