@@ -25,6 +25,7 @@ import { run } from "./runner";
 import { arrayify, dedent } from "./utils";
 
 interface Argv {
+    branch: string;
     config?: string;
     exclude: string[];
     fix?: boolean;
@@ -52,6 +53,15 @@ interface Option {
 }
 
 const options: Option[] = [
+    {
+        short: "b",
+        name: "branch",
+        type: "string",
+        describe: "branch to do git diff off of",
+        description: dedent`
+            Will do a git diff and only report the lint errors on the lines
+            which have changed, git command run is: git --no-pager diff -U0 <branch>`,
+    },
     {
         short: "c",
         name: "config",
@@ -250,6 +260,7 @@ const outputStream: NodeJS.WritableStream = argv.out === undefined
 
 run(
     {
+        branch: argv.branch,
         config: argv.config,
         exclude: argv.exclude,
         files: arrayify(commander.args),

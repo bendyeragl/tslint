@@ -22,6 +22,7 @@ import * as glob from "glob";
 import { filter as createMinimatchFilter, Minimatch } from "minimatch";
 import * as path from "path";
 import * as ts from "typescript";
+import { init as gitDiffInit } from "./enableDisableRulesOnGitDiff"
 
 import {
     DEFAULT_CONFIG,
@@ -34,6 +35,11 @@ import { Linter } from "./linter";
 import { flatMap } from "./utils";
 
 export interface Options {
+    /**
+     * Path to a configuration file.
+     */
+    branch?: string;
+
     /**
      * Path to a configuration file.
      */
@@ -148,6 +154,8 @@ async function runWorker(options: Options, logger: Logger): Promise<Status> {
     if (options.config && !fs.existsSync(options.config)) {
         throw new FatalError(`Invalid option for configuration: ${options.config}`);
     }
+
+    gitDiffInit(options.branch);
 
     const { output, errorCount } = await runLinter(options, logger);
     if (output && output.trim()) {

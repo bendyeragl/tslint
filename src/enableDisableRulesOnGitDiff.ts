@@ -25,9 +25,9 @@ let includeMap: Map<string, ts.TextRange[]>;
 const outFileNameRegex = /^\+\+\+ b(.*)$/m;
 const changeRegex = /^@@ \-\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/mg;
 
-(function init() {
+export function init(branch: string | undefined ) {
     const cwd = process.cwd();
-    const result = execSync("git --no-pager diff -U0 master", {encoding: "utf8"});
+    const result = execSync(`git --no-pager diff -U0 ${branch || ''}`, {encoding: "utf8"});
     const gitOutputByFile = splitGitOutputByFile(result);
     const filtered = gitOutputByFile.filter((x) => x !== "");
     const mapToBlob =  filtered.map(toFileNameMap)
@@ -39,7 +39,7 @@ const changeRegex = /^@@ \-\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/mg;
             return accumulator;
         },
         new Map<string, ts.TextRange[]>());
-})();
+}
 
 function splitGitOutputByFile(input: string): string[] {
     return input.split(/^diff --git a\/.* b\/.*$/m);
@@ -67,7 +67,6 @@ function toChanges(input: [string, string]): [string, ts.TextRange[]] {
 
 export function removeIrreleventFailures(sourceFile: ts.SourceFile, failures: RuleFailure[]): RuleFailure[] {
     if (failures.length === 0) {
-        // Usually there won't be failures anyway, so no need to look for "tslint:disable".
         return failures;
     }
     const includedIntervals = includeMap.get(sourceFile.fileName);
