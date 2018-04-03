@@ -22,7 +22,7 @@ import * as glob from "glob";
 import { filter as createMinimatchFilter, Minimatch } from "minimatch";
 import * as path from "path";
 import * as ts from "typescript";
-import { init as gitDiffInit } from "./enableDisableRulesOnGitDiff"
+import { init as gitDiffInit } from "./enableDisableRulesOnGitDiff";
 
 import {
     DEFAULT_CONFIG,

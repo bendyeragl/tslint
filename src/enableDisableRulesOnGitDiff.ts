@@ -25,9 +25,9 @@ let includeMap: Map<string, ts.TextRange[]>;
 const outFileNameRegex = /^\+\+\+ b(.*)$/m;
 const changeRegex = /^@@ \-\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/mg;
 
-export function init(branch: string | undefined ) {
+export function init(branch: string | undefined) {
     const cwd = process.cwd();
-    const result = execSync(`git --no-pager diff -U0 ${branch || ''}`, {encoding: "utf8"});
+    const result = execSync(`git --no-pager diff -U0 ${branch === undefined ? "" : branch}`, {encoding: "utf8"});
     const gitOutputByFile = splitGitOutputByFile(result);
     const filtered = gitOutputByFile.filter((x) => x !== "");
     const mapToBlob =  filtered.map(toFileNameMap)
