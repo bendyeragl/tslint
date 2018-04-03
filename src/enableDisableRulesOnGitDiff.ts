@@ -21,12 +21,9 @@ import { execSync } from "child_process";
 import * as ts from "typescript";
 import { RuleFailure } from "./language/rule/rule";
 
-const myLog:any[] = [];
 let includeMap: Map<string, ts.TextRange[]>;
 const outFileNameRegex = /^\+\+\+ b(.*)$/m;
 const changeRegex = /^@@ \-\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/mg;
-
-process.on("beforeExit", ()=>{console.log("here", JSON.stringify(myLog))});
 
 (function init() {
     const cwd = process.cwd();
@@ -41,8 +38,7 @@ process.on("beforeExit", ()=>{console.log("here", JSON.stringify(myLog))});
             accumulator.set(cwd + currentValue[0], currentValue[1]);
             return accumulator;
         },
-        new Map<string, ts.TextRange[]>()); 
-    console.log(includeMap);
+        new Map<string, ts.TextRange[]>());
 })();
 
 function splitGitOutputByFile(input: string): string[] {
@@ -58,7 +54,7 @@ function toFileNameMap(fileBlob: string): [string, string] | null {
 function toChanges(input: [string, string]): [string, ts.TextRange[]] {
     let arr;
     const range: ts.TextRange[] = [];
-    while((arr = changeRegex.exec(input[1])) !== null) { 
+    while ((arr = changeRegex.exec(input[1])) !== null) { // tslint:disable-line
         const len = arr[2] === undefined ? 1 : parseInt(arr[2], 10);
         const pos = parseInt(arr[1], 10) - 1;
         if (len > 0) {
@@ -70,26 +66,19 @@ function toChanges(input: [string, string]): [string, ts.TextRange[]] {
 }
 
 export function removeIrreleventFailures(sourceFile: ts.SourceFile, failures: RuleFailure[]): RuleFailure[] {
-    
     if (failures.length === 0) {
         // Usually there won't be failures anyway, so no need to look for "tslint:disable".
         return failures;
     }
-    myLog.push(sourceFile.fileName);
-    myLog.push(includeMap);
     const includedIntervals = includeMap.get(sourceFile.fileName);
-    myLog.push(includedIntervals);
     if (includedIntervals === undefined || includedIntervals.length === 0) {
         return [];
     }
-    myLog.push('here');
-    return failures.filter((failure) =>{
-        
+
+    return failures.filter((failure) => {
         const failPos = failure.getStartPosition().getLineAndCharacter().line;
         const failEnd = failure.getEndPosition().getLineAndCharacter().line;
 
-        myLog.push({failPos, failEnd});
-        return includedIntervals.some(({ pos, end }) => {
-            return failEnd >= pos &&  failPos <= end;
-        });});
+        return includedIntervals.some(({ pos, end }) => failEnd >= pos &&  failPos <= end);
+    });
 }

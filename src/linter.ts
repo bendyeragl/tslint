@@ -165,7 +165,7 @@ export class Linter {
 
     private getAllFailures(sourceFile: ts.SourceFile, enabledRules: IRule[]): RuleFailure[] {
         let failures = flatMap(enabledRules, (rule) => this.applyRule(rule, sourceFile));
-        failures = removeDisabledFailures(sourceFile, failures)
+        failures = removeDisabledFailures(sourceFile, failures);
         failures = removeIrreleventFailures(sourceFile, failures);
         return failures;
     }
