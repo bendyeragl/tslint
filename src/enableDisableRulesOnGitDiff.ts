@@ -21,11 +21,15 @@ import { execSync } from "child_process";
 import * as ts from "typescript";
 import { RuleFailure } from "./language/rule/rule";
 
+const myLog:any[] = [];
 let includeMap: Map<string, ts.TextRange[]>;
 const outFileNameRegex = /^\+\+\+ b(.*)$/m;
 const changeRegex = /^@@ \-\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/mg;
 
+process.on("beforeExit", ()=>{console.log("here", JSON.stringify(myLog))});
+
 (function init() {
+    const cwd = process.cwd();
     const result = execSync("git --no-pager diff -U0 master", {encoding: "utf8"});
     const gitOutputByFile = splitGitOutputByFile(result);
     const filtered = gitOutputByFile.filter((x) => x !== "");
@@ -34,10 +38,11 @@ const changeRegex = /^@@ \-\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/mg;
         .map<[string, string]>((x) => x as [string, string]);
     includeMap = mapToBlob.map(toChanges).reduce(
         (accumulator: Map<string, ts.TextRange[]>, currentValue: [string, ts.TextRange[]]) => {
-            accumulator.set(currentValue[0], currentValue[1]);
+            accumulator.set(cwd + currentValue[0], currentValue[1]);
             return accumulator;
         },
-        new Map<string, ts.TextRange[]>());
+        new Map<string, ts.TextRange[]>()); 
+    console.log(includeMap);
 })();
 
 function splitGitOutputByFile(input: string): string[] {
@@ -55,7 +60,7 @@ function toChanges(input: [string, string]): [string, ts.TextRange[]] {
     const range: ts.TextRange[] = [];
     while((arr = changeRegex.exec(input[1])) !== null) { 
         const len = arr[2] === undefined ? 1 : parseInt(arr[2], 10);
-        const pos = parseInt(arr[1], 10);
+        const pos = parseInt(arr[1], 10) - 1;
         if (len > 0) {
             const end = pos + len - 1;
             range.push({pos, end});
@@ -65,19 +70,26 @@ function toChanges(input: [string, string]): [string, ts.TextRange[]] {
 }
 
 export function removeIrreleventFailures(sourceFile: ts.SourceFile, failures: RuleFailure[]): RuleFailure[] {
+    
     if (failures.length === 0) {
         // Usually there won't be failures anyway, so no need to look for "tslint:disable".
         return failures;
     }
+    myLog.push(sourceFile.fileName);
+    myLog.push(includeMap);
     const includedIntervals = includeMap.get(sourceFile.fileName);
+    myLog.push(includedIntervals);
     if (includedIntervals === undefined || includedIntervals.length === 0) {
         return [];
     }
+    myLog.push('here');
+    return failures.filter((failure) =>{
+        
+        const failPos = failure.getStartPosition().getLineAndCharacter().line;
+        const failEnd = failure.getEndPosition().getLineAndCharacter().line;
 
-    return failures.filter((failure) =>
-        includedIntervals.some(({ pos, end }) => {
-            const failPos = failure.getStartPosition().getPosition();
-            const failEnd = failure.getEndPosition().getPosition();
-            return failEnd >= pos && (end === -1 || failPos < end);
-        }));
+        myLog.push({failPos, failEnd});
+        return includedIntervals.some(({ pos, end }) => {
+            return failEnd >= pos &&  failPos <= end;
+        });});
 }
