@@ -1,7 +1,7 @@
 {
   "name": "tslint-gitdiff",
   "version": "5.9.3",
-  "description": "An extensible static analysis linter for the TypeScript language",
+  "description": "An extensible static analysis linter for the TypeScript language with git diff",
   "bin": {
     "tslint-gitdiff": "./bin/tslint-gitdiff"
   },
