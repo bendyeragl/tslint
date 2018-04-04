@@ -3,7 +3,7 @@
   "version": "5.9.2",
   "description": "An extensible static analysis linter for the TypeScript language",
   "bin": {
-    "tslint": "./bin/tslint-gitdiff"
+    "tslint-gitdiff": "./bin/tslint-gitdiff"
   },
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
