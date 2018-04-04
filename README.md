@@ -17,4 +17,14 @@ Please refer to the full usage documentation on the [TSLint website](https://pal
 
 just relplace `tslint` with `tslint-gitdiff`
 
-install with `npm i tslint-gitdiff -g`
+Installation
+Local (in your project’s working directory):
+
+npm install tslint-gitdiff typescript --save-dev
+# or
+yarn add tslint-gitdiff typescript --dev
+Global:
+
+npm install tslint-gitdiff typescript -g
+# or
+yarn global add tslint-gitdiff typescript
