@@ -60,7 +60,11 @@ const options: Option[] = [
         describe: "branch to do git diff off of",
         description: dedent`
             Will do a git diff and only report the lint errors on the lines
-            which have changed, git command run is: git --no-pager diff -U0 <branch>`,
+            which have changed, git command run is: git --no-pager diff -U0 <branch>.
+            Branch is optional. Not sending branch will do git diff on local changes. 
+            If branch is sent it must be a valid branch name eg. master, or a branch 
+            name with three dots (...) eg: master..., three dots implying changes from 
+            merge base of master and HEAD see git diff --help for more info `,
     },
     {
         short: "c",
