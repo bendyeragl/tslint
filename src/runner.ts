@@ -155,7 +155,9 @@ async function runWorker(options: Options, logger: Logger): Promise<Status> {
         throw new FatalError(`Invalid option for configuration: ${options.config}`);
     }
 
-    gitDiffInit(options.branch);
+    if (!gitDiffInit(options.branch)) {
+        throw new FatalError(`Invalid option for branch: ${options.branch}`);
+    }
 
     const { output, errorCount } = await runLinter(options, logger);
     if (output && output.trim()) {

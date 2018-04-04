@@ -25,8 +25,11 @@ let includeMap: Map<string, ts.TextRange[]>;
 const outFileNameRegex = /^\+\+\+ b(.*)$/m;
 const changeRegex = /^@@ \-\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/mg;
 
-export function init(branch: string | undefined) {
+export function init(branch: string | undefined): boolean {
     const cwd = process.cwd();
+    if (!branchCheck(branch)) {
+        return false;
+    }
     const result = execSync(`git --no-pager diff -U0 ${branch === undefined ? "" : branch}`, {encoding: "utf8"});
     const gitOutputByFile = splitGitOutputByFile(result);
     const filtered = gitOutputByFile.filter((x) => x !== "");
@@ -39,6 +42,20 @@ export function init(branch: string | undefined) {
             return accumulator;
         },
         new Map<string, ts.TextRange[]>());
+    return true;
+}
+
+function branchCheck(branch: string | undefined): boolean {
+    if (branch === undefined) {
+        return true;
+    }
+    const branchName: string = branch.endsWith("...") ? branch.slice(0, -3) : branch;
+    try {
+        const result = execSync(`git check-ref-format --branch ${branchName}`, {encoding: "utf8"}).trim();
+        return result === branchName;
+    } catch (e) {
+        return false;
+    }
 }
 
 function splitGitOutputByFile(input: string): string[] {
