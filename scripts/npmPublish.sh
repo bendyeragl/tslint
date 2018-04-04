@@ -9,7 +9,7 @@ set -e
 rm -rf tempPublish
 mkdir tempPublish
 
-git clone git@github.com:palantir/tslint.git tempPublish
+git clone git@github.com:bendyeragl/tslint-gitdiff.git tempPublish
 cd tempPublish
 git checkout $npm_package_version
 
