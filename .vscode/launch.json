@@ -26,7 +26,7 @@
             "name": "self lint",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/bin/tslint",
+            "program": "${workspaceRoot}/bin/tslint-gitdiff",
             "stopOnEntry": false,
             "args": [ "--project", "test/tsconfig.json", "--format", "stylish"],
             "cwd": "${workspaceRoot}",

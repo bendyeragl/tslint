@@ -1,20 +1,22 @@
 {
-  "name": "tslint",
+  "name": "tslint-gitdiff",
   "version": "5.9.1",
   "description": "An extensible static analysis linter for the TypeScript language",
   "bin": {
-    "tslint": "./bin/tslint"
+    "tslint": "./bin/tslint-gitdiff"
   },
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/palantir/tslint.git"
+    "url": "https://github.com/bendyeragl/tslint-gitdiff"
   },
   "keywords": [
     "cli",
     "typescript",
-    "linter"
+    "linter",
+    "git",
+    "diff"
   ],
   "scripts": {
     "clean": "npm-run-all -p clean:core clean:test",
@@ -27,7 +29,7 @@
     "compile:test": "tsc -p test",
     "lint": "npm-run-all -p lint:global lint:from-bin",
     "lint:global": "tslint --project test/tsconfig.json --format stylish # test includes 'src' too",
-    "lint:from-bin": "node bin/tslint --project test/tsconfig.json --format stylish",
+    "lint:from-bin": "node bin/tslint-gitdiff --project test/tsconfig.json --format stylish",
     "publish:local": "./scripts/npmPublish.sh",
     "test": "npm-run-all test:pre -p test:mocha test:rules",
     "test:pre": "cd ./test/config && npm install --no-save",
